@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentProvider {
+  TELEGRAM_STARS
+  MANUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+model User {
+  id               String    @id @default(uuid())
+  telegramId       BigInt    @unique
+  username         String?
+  firstName        String?
+  ageConfirmedAt   DateTime?
+  termsAcceptedAt  DateTime?
+  isBanned         Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  payments      Payment[]
+  subscriptions Subscription[]
+}
+
+model Plan {
+  id           String   @id @default(uuid())
+  slug         String   @unique
+  name         String
+  /// null = vitalício
+  durationDays Int?
+  /// Preço de referência em centavos de BRL (exibição)
+  priceCents   Int
+  /// Preço cobrado em Telegram Stars (XTR)
+  priceStars   Int
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  payments      Payment[]
+  subscriptions Subscription[]
+}
+
+model Payment {
+  id                String          @id @default(uuid())
+  userId            String
+  planId            String
+  provider          PaymentProvider
+  status            PaymentStatus   @default(PENDING)
+  amount            Int
+  currency          String
+  /// Payload único enviado na invoice — chave de idempotência
+  invoicePayload    String          @unique
+  /// telegram_payment_charge_id (necessário para reembolso)
+  providerChargeId  String?         @unique
+  paidAt            DateTime?
+  refundedAt        DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  plan         Plan          @relation(fields: [planId], references: [id], onDelete: Restrict)
+  subscription Subscription?
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+}
+
+model Subscription {
+  id                  String             @id @default(uuid())
+  userId              String
+  planId              String
+  paymentId           String             @unique
+  status              SubscriptionStatus @default(ACTIVE)
+  startsAt            DateTime           @default(now())
+  /// null = vitalício
+  expiresAt           DateTime?
+  expiryNotifiedAt    DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Restrict)
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status])
+  @@index([status, expiresAt])
+}
