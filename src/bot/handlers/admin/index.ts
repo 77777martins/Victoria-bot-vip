@@ -19,6 +19,9 @@ const HELP =
   '/textoboasvindas &lt;texto&gt; | /textopadrao\n' +
   '/removermidia | /removermidiaplanos | /limparprevias\n' +
   '/vercomocliente\n\n' +
+  '🎉 <b>Boas-vindas de quem entra no grupo</b> <i>(no privado)</i>\n' +
+  '/entradagrupo <i>(respondendo a mídia)</i> | /textoentrada &lt;texto&gt;\n' +
+  '/verentrada | /entradapadrao\n\n' +
   '📣 <b>Remarketing</b> <i>(quem não comprou)</i>\n' +
   '/remarketing &lt;horas&gt; [texto]\n' +
   '/verremarketing | /testarremarketing &lt;n&gt; | /removerremarketing &lt;n&gt;\n\n' +

@@ -49,3 +49,10 @@ export const sendPreviews = async (ctx: BotContext): Promise<void> => {
   );
   await ctx.reply(messages.previewsCta, { parse_mode: 'HTML', ...keyboards.cta() });
 };
+
+/** Boas-vindas no privado para quem acabou de entrar no grupo VIP. */
+export const sendMemberWelcome = async (telegram: BotContext['telegram'], telegramId: number): Promise<void> => {
+  const screen = await contentService.getScreen('member');
+  const text = screen.text ? escapeHtml(screen.text) : messages.defaultMemberWelcome;
+  await sendMediaMessage(telegram, telegramId, { mediaType: screen.mediaType, fileId: screen.fileId, text }, { parseMode: 'HTML' });
+};

@@ -32,6 +32,19 @@ export const messages = {
         '✅ Liberação automática na hora\n🔒 Pagamento seguro pelo Telegram (⭐ Stars)'
       : 'Nenhum plano disponível no momento.',
 
+  /** Enviada no privado quando o assinante entra no grupo (editável com /textoentrada) */
+  defaultMemberWelcome:
+    '🎉 <b>Seja muito bem-vindo(a) ao meu VIP!</b> 😘\n\n' +
+    'Agora você faz parte do meu cantinho exclusivo 🔥\n\n' +
+    '📌 <b>Regrinhas rápidas:</b>\n' +
+    '• Conteúdo só pra você — nada de print, gravar ou repassar\n' +
+    '• Respeito sempre, comigo e com todo mundo\n' +
+    '• Quem compartilhar conteúdo é removido sem reembolso\n\n' +
+    '🆕 Tem conteúdo novo toda semana, fica de olho nas notificações 👀\n\n' +
+    'Qualquer coisa sobre pagamento: /paysupport\n' +
+    'Ver sua assinatura: /assinatura\n\n' +
+    'Aproveita, amor 💋',
+
   previewsCta: '😏 Gostou? Isso é só uma amostra...\nNo VIP tem <b>muito mais</b>.',
 
   invoiceTitle: (p: PlanDTO) => `VIP Victoria — ${p.name}`.slice(0, 32),

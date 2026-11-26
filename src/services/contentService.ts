@@ -15,7 +15,7 @@ const welcomeSchema = z.object({
 export type WelcomeContent = z.infer<typeof welcomeSchema>;
 
 /** Telas com mídia configurável pelo admin. */
-export type ScreenKey = 'welcome' | 'plans';
+export type ScreenKey = 'welcome' | 'plans' | 'member';
 const EMPTY: WelcomeContent = { mediaType: null, fileId: null, text: null };
 
 // Cache em memória: essas telas são lidas a cada /start e /planos
