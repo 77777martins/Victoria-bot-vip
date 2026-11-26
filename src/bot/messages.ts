@@ -53,6 +53,13 @@ export const messages = {
     '🛟 <b>Suporte de pagamento</b>\n\n' +
     (username ? `Fale com @${username} informando seu ID: ` : 'Responda esta mensagem informando seu ID: '),
 
+  saleNotice: (s: { buyer: string; telegramId: number; planName: string; stars: number; chargeId: string }) =>
+    '💰 <b>Nova venda!</b>\n\n' +
+    `Cliente: ${escapeHtml(s.buyer)} (<code>${s.telegramId}</code>)\n` +
+    `Plano: ${escapeHtml(s.planName)}\n` +
+    `Valor: ⭐ ${s.stars}\n\n` +
+    `Reembolso: <code>/reembolsar ${escapeHtml(s.chargeId)}</code>`,
+
   banned: 'Sua conta não tem permissão para usar este bot.',
   rateLimited: 'Calma 🙂 Aguarde alguns segundos e tente de novo.',
   genericError: 'Ops, algo deu errado. Tente novamente em instantes.',
