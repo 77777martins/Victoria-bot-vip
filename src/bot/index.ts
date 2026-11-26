@@ -3,7 +3,7 @@ import type { BotContext } from './context';
 import { env } from '../config/env';
 import { logger } from '../lib/logger';
 import { createAccessService } from '../services/accessService';
-import { ensureUser, rateLimit, requireAge } from './middlewares';
+import { ensureUser, normalizePastedCommand, rateLimit, requireAge } from './middlewares';
 import { messages } from './messages';
 import { registerStartHandlers } from './handlers/start';
 import { registerPlanHandlers } from './handlers/plans';
@@ -22,6 +22,7 @@ export const createBot = () => {
     return next();
   });
   bot.use(rateLimit());
+  bot.use(normalizePastedCommand);
   bot.use(ensureUser);
 
   // Pagamento e entrada no grupo antes do age gate (nunca bloquear esses updates)
