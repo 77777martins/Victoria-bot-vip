@@ -11,7 +11,8 @@ const HELP =
   '/stats — resumo de vendas\n' +
   '/liberar &lt;telegramId&gt; &lt;semanal|mensal|vitalicio&gt;\n' +
   '/banir &lt;telegramId&gt; | /desbanir &lt;telegramId&gt;\n' +
-  '/reembolsar &lt;chargeId&gt;\n\n' +
+  '/reembolsar &lt;chargeId&gt;\n' +
+  '/precostars [plano] [stars] — ver/alterar preço em ⭐\n\n' +
   '🎨 <b>Visual de vendas</b> <i>(responda a uma foto/vídeo)</i>\n' +
   '/boasvindas — capa da tela inicial\n' +
   '/addprevia — prévia (máx. 10)\n' +

@@ -2,7 +2,7 @@ import { Composer } from 'telegraf';
 import type { BotContext } from '../../context';
 import { logger } from '../../../lib/logger';
 import { prisma } from '../../../lib/prisma';
-import { formatDate } from '../../../lib/format';
+import { formatBRL, formatDate } from '../../../lib/format';
 import { userService } from '../../../services/userService';
 import { planService } from '../../../services/planService';
 import { paymentService } from '../../../services/paymentService';
@@ -96,4 +96,31 @@ coreAdmin.command('reembolsar', async (ctx) => {
 
   audit(ctx, 'reembolsar', { paymentId: payment.id });
   return ctx.reply('💸 Reembolso feito e acesso revogado.');
+});
+
+const MIN_STARS = 1;
+const MAX_STARS = 10_000;
+
+coreAdmin.command('precostars', async (ctx) => {
+  const [slug, value] = args(ctx);
+
+  if (!slug) {
+    const plans = await planService.listAll();
+    const lines = plans.map((p) => `• ${p.slug}: ⭐ ${p.priceStars} (anunciado ${formatBRL(p.priceCents)})`);
+    return ctx.reply(
+      `⭐ Preços atuais em Stars:\n\n${lines.join('\n')}\n\n` +
+        'Para mudar: /precostars <plano> <stars>\nEx.: /precostars semanal 150',
+    );
+  }
+
+  const stars = Number(value);
+  if (!Number.isInteger(stars) || stars < MIN_STARS || stars > MAX_STARS) {
+    return ctx.reply(`Valor inválido. Use um número inteiro entre ${MIN_STARS} e ${MAX_STARS}.\nEx.: /precostars semanal 150`);
+  }
+
+  const plan = await planService.updateStars(slug.toLowerCase(), stars);
+  if (!plan) return ctx.reply('Plano não encontrado. Veja os nomes com /precostars');
+
+  audit(ctx, 'precostars', { slug: plan.slug, stars });
+  return ctx.reply(`✅ ${plan.name} agora custa ⭐ ${stars}.\nLembre de ajustar preços escritos nos textos de venda, se houver.`);
 });

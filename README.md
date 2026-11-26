@@ -58,6 +58,7 @@ src/
 Usuário: `/start`, `/planos`, `/assinatura`, `/termos`, `/paysupport`
 
 Admin (IDs em `ADMIN_IDS`, só no privado): `/admin`, `/stats`,
+`/precostars [plano] [stars]` (ver/alterar preço em Stars),
 `/liberar <id> <plano>`, `/banir <id>`, `/desbanir <id>`, `/reembolsar <chargeId>`
 
 Visual de vendas (editável pelo próprio Telegram, sem deploy):
