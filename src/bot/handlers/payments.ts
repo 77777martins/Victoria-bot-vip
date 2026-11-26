@@ -3,6 +3,8 @@ import type { BotContext } from '../context';
 import { messages } from '../messages';
 import { paymentService } from '../../services/paymentService';
 import { logger } from '../../lib/logger';
+import { env } from '../../config/env';
+import { planService } from '../../services/planService';
 
 export const registerPaymentHandlers = (bot: Telegraf<BotContext>): void => {
   // O Telegram exige resposta em até 10s, senão cancela a compra.
@@ -42,5 +44,22 @@ export const registerPaymentHandlers = (bot: Telegraf<BotContext>): void => {
     logger.info({ telegramId, subscriptionId: subscription.id }, 'pagamento confirmado');
     const link = await ctx.access.createInviteLink(telegramId);
     await ctx.reply(messages.paymentApproved(link, subscription.expiresAt), { parse_mode: 'HTML' });
+
+    const plan = await planService.findById(subscription.planId);
+    const buyer = ctx.from.username ? `@${ctx.from.username}` : ctx.from.first_name;
+    const notice = messages.saleNotice({
+      buyer,
+      telegramId,
+      planName: plan?.name ?? 'VIP',
+      stars: sp.total_amount,
+      chargeId: sp.telegram_payment_charge_id,
+    });
+    await Promise.all(
+      [...env.ADMIN_IDS].map((adminId) =>
+        ctx.telegram
+          .sendMessage(adminId, notice, { parse_mode: 'HTML' })
+          .catch((err: unknown) => logger.warn({ err, adminId }, 'aviso de venda não entregue')),
+      ),
+    );
   });
 };

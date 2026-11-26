@@ -1,5 +1,6 @@
 import { escapeHtml, formatBRL, formatDate } from '../lib/format';
 import type { PlanDTO } from '../domain/types';
+import { planBadge } from './planBadges';
 
 export const messages = {
   ageGate: (name: string | null) =>
@@ -11,14 +12,27 @@ export const messages = {
 
   ageDeclined: 'Tudo bem. O acesso é exclusivo para maiores de 18 anos. 👋',
 
-  welcome: '✨ Bem-vindo(a) ao VIP da <b>Victoria</b>!\n\nEscolha seu plano abaixo:',
+  /** Texto padrão — o admin pode trocar com /textoboasvindas */
+  defaultWelcome:
+    '🔥 Oi, amor! Que bom te ver por aqui 😘\n\n' +
+    'No meu <b>VIP</b> você tem acesso a:\n' +
+    '📸 Fotos e vídeos exclusivos que não posto em lugar nenhum\n' +
+    '🆕 Conteúdo novo toda semana\n' +
+    '🔒 Grupo 100% privado e discreto\n\n' +
+    '👇 Toque abaixo e entre agora',
 
-  planLine: (p: PlanDTO) => `• <b>${escapeHtml(p.name)}</b> — ${formatBRL(p.priceCents)} (⭐ ${p.priceStars})`,
+  planLine: (p: PlanDTO) => {
+    const { icon, tag } = planBadge(p.slug);
+    return `${icon} <b>${escapeHtml(p.name)}</b> — ${formatBRL(p.priceCents)}${tag ? `\n     <i>${tag}</i>` : ''}`;
+  },
 
   plansList: (plans: PlanDTO[]) =>
     plans.length
-      ? `💎 <b>Planos disponíveis</b>\n\n${plans.map(messages.planLine).join('\n')}\n\nPagamento seguro via Telegram Stars ⭐`
+      ? `💎 <b>Escolha seu acesso VIP</b>\n\n${plans.map(messages.planLine).join('\n\n')}\n\n` +
+        '✅ Liberação automática na hora\n🔒 Pagamento seguro pelo Telegram (⭐ Stars)'
       : 'Nenhum plano disponível no momento.',
+
+  previewsCta: '😏 Gostou? Isso é só uma amostra...\nNo VIP tem <b>muito mais</b>.',
 
   invoiceTitle: (p: PlanDTO) => `VIP Victoria — ${p.name}`.slice(0, 32),
   invoiceDescription: (p: PlanDTO) =>
@@ -52,6 +66,13 @@ export const messages = {
   paySupport: (username?: string) =>
     '🛟 <b>Suporte de pagamento</b>\n\n' +
     (username ? `Fale com @${username} informando seu ID: ` : 'Responda esta mensagem informando seu ID: '),
+
+  saleNotice: (s: { buyer: string; telegramId: number; planName: string; stars: number; chargeId: string }) =>
+    '💰 <b>Nova venda!</b>\n\n' +
+    `Cliente: ${escapeHtml(s.buyer)} (<code>${s.telegramId}</code>)\n` +
+    `Plano: ${escapeHtml(s.planName)}\n` +
+    `Valor: ⭐ ${s.stars}\n\n` +
+    `Reembolso: <code>/reembolsar ${escapeHtml(s.chargeId)}</code>`,
 
   banned: 'Sua conta não tem permissão para usar este bot.',
   rateLimited: 'Calma 🙂 Aguarde alguns segundos e tente de novo.',
