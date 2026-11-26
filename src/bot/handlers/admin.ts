@@ -8,6 +8,8 @@ import { userService } from '../../services/userService';
 import { planService } from '../../services/planService';
 import { paymentService } from '../../services/paymentService';
 import { subscriptionService } from '../../services/subscriptionService';
+import { contentService, MAX_CAPTION, type MediaType } from '../../services/contentService';
+import { sendWelcome } from '../presenters';
 
 const HELP =
   '🛠 <b>Admin</b>\n\n' +
@@ -15,9 +17,35 @@ const HELP =
   '/liberar &lt;telegramId&gt; &lt;semanal|mensal|vitalicio&gt;\n' +
   '/banir &lt;telegramId&gt; — remove e bloqueia\n' +
   '/desbanir &lt;telegramId&gt;\n' +
-  '/reembolsar &lt;chargeId&gt; — devolve Stars e revoga';
+  '/reembolsar &lt;chargeId&gt; — devolve Stars e revoga\n\n' +
+  '🎨 <b>Visual de vendas</b>\n' +
+  '<i>Responda a uma foto/vídeo com:</i>\n' +
+  '/boasvindas — define a mídia da tela inicial\n' +
+  '/addprevia — adiciona prévia (máx. 10)\n\n' +
+  '/textoboasvindas &lt;texto&gt; — troca o texto inicial\n' +
+  '/textopadrao — volta ao texto padrão\n' +
+  '/removermidia — tira a foto/vídeo inicial\n' +
+  '/limparprevias — apaga todas as prévias\n' +
+  '/vercomocliente — mostra a tela como o cliente vê';
 
 const ID_RE = /^\d{1,15}$/;
+
+/** Extrai foto/vídeo da mensagem respondida pelo admin. */
+const repliedMedia = (ctx: BotContext): { type: MediaType; fileId: string; caption?: string } | null => {
+  const reply = ctx.message && 'reply_to_message' in ctx.message ? ctx.message.reply_to_message : undefined;
+  if (!reply) return null;
+  const caption = 'caption' in reply ? reply.caption : undefined;
+  if ('photo' in reply && reply.photo.length) {
+    const largest = reply.photo[reply.photo.length - 1]!;
+    return { type: 'PHOTO', fileId: largest.file_id, caption };
+  }
+  if ('video' in reply) return { type: 'VIDEO', fileId: reply.video.file_id, caption };
+  return null;
+};
+
+/** Texto após o comando, preservando quebras de linha. */
+const commandText = (ctx: BotContext): string =>
+  ctx.message && 'text' in ctx.message ? ctx.message.text.replace(/^\/\S+\s*/, '').trim() : '';
 
 const args = (ctx: BotContext): string[] =>
   ctx.message && 'text' in ctx.message ? ctx.message.text.trim().split(/\s+/).slice(1) : [];
@@ -115,6 +143,54 @@ export const registerAdminHandlers = (bot: Telegraf<BotContext>): void => {
     audit(ctx, 'reembolsar', { paymentId: payment.id });
     return ctx.reply('💸 Reembolso feito e acesso revogado.');
   });
+
+  admin.command('boasvindas', async (ctx) => {
+    const media = repliedMedia(ctx);
+    if (!media) return ctx.reply('Envie uma foto ou vídeo e RESPONDA a ela com /boasvindas.');
+    await contentService.updateWelcome({
+      mediaType: media.type,
+      fileId: media.fileId,
+      ...(media.caption ? { text: media.caption.slice(0, MAX_CAPTION) } : {}),
+    });
+    audit(ctx, 'boasvindas', { type: media.type });
+    return ctx.reply('✅ Tela inicial atualizada. Veja com /vercomocliente');
+  });
+
+  admin.command('textoboasvindas', async (ctx) => {
+    const text = commandText(ctx);
+    if (!text) return ctx.reply('Uso: /textoboasvindas seu texto aqui (pode ter várias linhas)');
+    if (text.length > MAX_CAPTION) return ctx.reply(`Texto muito longo (${text.length}/${MAX_CAPTION}).`);
+    await contentService.updateWelcome({ text });
+    audit(ctx, 'textoboasvindas');
+    return ctx.reply('✅ Texto atualizado. Veja com /vercomocliente');
+  });
+
+  admin.command('textopadrao', async (ctx) => {
+    await contentService.updateWelcome({ text: null });
+    return ctx.reply('✅ Voltou ao texto padrão.');
+  });
+
+  admin.command('removermidia', async (ctx) => {
+    await contentService.updateWelcome({ mediaType: null, fileId: null });
+    return ctx.reply('✅ Mídia inicial removida.');
+  });
+
+  admin.command('addprevia', async (ctx) => {
+    const media = repliedMedia(ctx);
+    if (!media) return ctx.reply('Envie uma foto ou vídeo e RESPONDA a ela com /addprevia.');
+    const total = await contentService.addPreview(media.type, media.fileId);
+    if (total === -1) return ctx.reply('Limite de 10 prévias. Use /limparprevias para recomeçar.');
+    audit(ctx, 'addprevia', { type: media.type });
+    return ctx.reply(`✅ Prévia adicionada (${total}/10).`);
+  });
+
+  admin.command('limparprevias', async (ctx) => {
+    await contentService.clearPreviews();
+    audit(ctx, 'limparprevias');
+    return ctx.reply('🗑 Prévias apagadas.');
+  });
+
+  admin.command('vercomocliente', (ctx) => sendWelcome(ctx));
 
   // Só executa para IDs de admin em chat privado; para os demais, é ignorado silenciosamente.
   bot.use(

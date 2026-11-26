@@ -104,3 +104,26 @@ model Subscription {
   @@index([userId, status])
   @@index([status, expiresAt])
 }
+
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
+/// Configurações editáveis pelo admin via bot (chave/valor JSON validado no código)
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+/// Mídias de prévia exibidas antes da compra (file_id do Telegram)
+model PreviewMedia {
+  id        String    @id @default(uuid())
+  type      MediaType
+  fileId    String
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  @@index([sortOrder])
+}

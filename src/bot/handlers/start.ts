@@ -4,6 +4,7 @@ import { CB, keyboards } from '../keyboards';
 import { messages } from '../messages';
 import { userService } from '../../services/userService';
 import { env } from '../../config/env';
+import { sendPreviews, sendWelcome } from '../presenters';
 
 export const registerStartHandlers = (bot: Telegraf<BotContext>): void => {
   bot.start(async (ctx) => {
@@ -13,7 +14,7 @@ export const registerStartHandlers = (bot: Telegraf<BotContext>): void => {
       await ctx.reply(messages.ageGate(user.firstName), { parse_mode: 'HTML', ...keyboards.ageGate() });
       return;
     }
-    await ctx.reply(messages.welcome, { parse_mode: 'HTML', ...keyboards.mainMenu() });
+    await sendWelcome(ctx);
   });
 
   bot.action(CB.ageAccept, async (ctx) => {
@@ -21,13 +22,18 @@ export const registerStartHandlers = (bot: Telegraf<BotContext>): void => {
     if (!ctx.appUser) return;
     await userService.confirmAgeAndTerms(ctx.appUser.id);
     await ctx.editMessageReplyMarkup(undefined).catch(() => undefined);
-    await ctx.reply(messages.welcome, { parse_mode: 'HTML', ...keyboards.mainMenu() });
+    await sendWelcome(ctx);
   });
 
   bot.action(CB.ageDecline, async (ctx) => {
     await ctx.answerCbQuery();
     await ctx.editMessageReplyMarkup(undefined).catch(() => undefined);
     await ctx.reply(messages.ageDeclined);
+  });
+
+  bot.action(CB.previews, async (ctx) => {
+    await ctx.answerCbQuery();
+    await sendPreviews(ctx);
   });
 
   bot.command('termos', (ctx) => ctx.reply(messages.terms, { parse_mode: 'HTML' }));

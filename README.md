@@ -60,6 +60,11 @@ Usuário: `/start`, `/planos`, `/assinatura`, `/termos`, `/paysupport`
 Admin (IDs em `ADMIN_IDS`, só no privado): `/admin`, `/stats`,
 `/liberar <id> <plano>`, `/banir <id>`, `/desbanir <id>`, `/reembolsar <chargeId>`
 
+Visual de vendas (editável pelo próprio Telegram, sem deploy):
+- Responder a uma foto/vídeo com `/boasvindas` → mídia da tela inicial (a legenda vira o texto)
+- Responder a uma foto/vídeo com `/addprevia` → prévia (máx. 10, enviadas com `protect_content`)
+- `/textoboasvindas <texto>`, `/textopadrao`, `/removermidia`, `/limparprevias`, `/vercomocliente`
+
 ## Segurança
 
 - Segredos só em variáveis de ambiente (validadas na inicialização, nunca logadas).
