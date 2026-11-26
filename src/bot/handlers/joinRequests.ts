@@ -4,6 +4,7 @@ import { env } from '../../config/env';
 import { logger } from '../../lib/logger';
 import { userService } from '../../services/userService';
 import { subscriptionService } from '../../services/subscriptionService';
+import { sendMemberWelcome } from '../presenters';
 
 /**
  * Só aprova a entrada no grupo de quem tem assinatura ativa.
@@ -21,6 +22,10 @@ export const registerJoinRequestHandler = (bot: Telegraf<BotContext>): void => {
     if (active) {
       await ctx.access.approveJoin(telegramId);
       logger.info({ telegramId }, 'entrada aprovada');
+      // No privado (não no grupo) para não expor quem assina aos outros membros
+      await sendMemberWelcome(ctx.telegram, telegramId).catch((err: unknown) =>
+        logger.warn({ err, telegramId }, 'boas-vindas de membro não entregue'),
+      );
     } else {
       await ctx.access.declineJoin(telegramId);
       logger.warn({ telegramId }, 'entrada recusada (sem assinatura ativa)');

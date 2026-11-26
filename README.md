@@ -58,6 +58,7 @@ src/
 Usuário: `/start`, `/planos`, `/assinatura`, `/termos`, `/paysupport`
 
 Admin (IDs em `ADMIN_IDS`, só no privado): `/admin`, `/stats`,
+`/precostars [plano] [stars]` (ver/alterar preço em Stars),
 `/liberar <id> <plano>`, `/banir <id>`, `/desbanir <id>`, `/reembolsar <chargeId>`
 
 Visual de vendas (editável pelo próprio Telegram, sem deploy):
@@ -65,6 +66,7 @@ Visual de vendas (editável pelo próprio Telegram, sem deploy):
 - Responder a uma foto/vídeo com `/addprevia` → prévia (máx. 10, enviadas com `protect_content`)
 - Responder a um vídeo/foto/GIF com `/midiaplanos` → mídia enviada junto com a lista de planos (`/removermidiaplanos` desfaz)
 - `/textoboasvindas <texto>`, `/textopadrao`, `/removermidia`, `/limparprevias`, `/vercomocliente`
+- Boas-vindas de quem entra no grupo (enviada no privado, para não expor assinantes): responder a mídia com `/entradagrupo`, ou `/textoentrada <texto>`; `/verentrada`, `/entradapadrao`
 - Vídeos curtos/sem som viram GIF (animation) no Telegram: aceitos na capa, nos planos, no remarketing e nos posts (não nas prévias)
 
 Remarketing (quem passou pelo 18+ e nunca comprou; máx. 5 mensagens, com botão de descadastro):

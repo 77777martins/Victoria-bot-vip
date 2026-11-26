@@ -1,7 +1,7 @@
 import { Composer } from 'telegraf';
 import type { BotContext } from '../../context';
 import { contentService, MAX_CAPTION } from '../../../services/contentService';
-import { sendWelcome } from '../../presenters';
+import { sendMemberWelcome, sendWelcome } from '../../presenters';
 import { audit, commandText, repliedMedia } from './utils';
 
 /** Visual de vendas: capa, texto e prévias. */
@@ -67,4 +67,35 @@ contentAdmin.command('midiaplanos', async (ctx) => {
 contentAdmin.command('removermidiaplanos', async (ctx) => {
   await contentService.updateScreen('plans', { mediaType: null, fileId: null });
   return ctx.reply('✅ Planos voltam a aparecer só com texto.');
+});
+
+// Boas-vindas para quem entra no grupo VIP (enviada no privado)
+contentAdmin.command('entradagrupo', async (ctx) => {
+  const media = repliedMedia(ctx);
+  if (!media) return ctx.reply('Envie uma foto, vídeo ou GIF e RESPONDA a ele com /entradagrupo.\nSó texto? Use /textoentrada seu texto');
+  await contentService.updateScreen('member', {
+    mediaType: media.type,
+    fileId: media.fileId,
+    ...(media.caption ? { text: media.caption.slice(0, MAX_CAPTION) } : {}),
+  });
+  audit(ctx, 'entradagrupo', { type: media.type });
+  return ctx.reply('✅ Boas-vindas do grupo atualizada. Veja com /verentrada');
+});
+
+contentAdmin.command('textoentrada', async (ctx) => {
+  const text = commandText(ctx);
+  if (!text) return ctx.reply('Uso: /textoentrada seu texto aqui (pode ter várias linhas)');
+  if (text.length > MAX_CAPTION) return ctx.reply(`Texto muito longo (${text.length}/${MAX_CAPTION}).`);
+  await contentService.updateScreen('member', { text });
+  audit(ctx, 'textoentrada');
+  return ctx.reply('✅ Texto atualizado. Veja com /verentrada');
+});
+
+contentAdmin.command('entradapadrao', async (ctx) => {
+  await contentService.updateScreen('member', { mediaType: null, fileId: null, text: null });
+  return ctx.reply('✅ Boas-vindas do grupo voltou ao padrão.');
+});
+
+contentAdmin.command('verentrada', async (ctx) => {
+  if (ctx.from) await sendMemberWelcome(ctx.telegram, ctx.from.id);
 });

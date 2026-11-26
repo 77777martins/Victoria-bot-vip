@@ -11,7 +11,8 @@ const HELP =
   '/stats — resumo de vendas\n' +
   '/liberar &lt;telegramId&gt; &lt;semanal|mensal|vitalicio&gt;\n' +
   '/banir &lt;telegramId&gt; | /desbanir &lt;telegramId&gt;\n' +
-  '/reembolsar &lt;chargeId&gt;\n\n' +
+  '/reembolsar &lt;chargeId&gt;\n' +
+  '/precostars [plano] [stars] — ver/alterar preço em ⭐\n\n' +
   '🎨 <b>Visual de vendas</b> <i>(responda a uma foto/vídeo)</i>\n' +
   '/boasvindas — capa da tela inicial\n' +
   '/addprevia — prévia (máx. 10)\n' +
@@ -19,6 +20,9 @@ const HELP =
   '/textoboasvindas &lt;texto&gt; | /textopadrao\n' +
   '/removermidia | /removermidiaplanos | /limparprevias\n' +
   '/vercomocliente\n\n' +
+  '🎉 <b>Boas-vindas de quem entra no grupo</b> <i>(no privado)</i>\n' +
+  '/entradagrupo <i>(respondendo a mídia)</i> | /textoentrada &lt;texto&gt;\n' +
+  '/verentrada | /entradapadrao\n\n' +
   '📣 <b>Remarketing</b> <i>(quem não comprou)</i>\n' +
   '/remarketing &lt;horas&gt; [texto]\n' +
   '/verremarketing | /testarremarketing &lt;n&gt; | /removerremarketing &lt;n&gt;\n\n' +
