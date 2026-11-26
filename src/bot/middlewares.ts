@@ -76,3 +76,23 @@ export const requireAge: MiddlewareFn<BotContext> = async (ctx, next) => {
   if (ctx.callbackQuery) await ctx.answerCbQuery();
   await ctx.reply(messages.ageGate(ctx.appUser.firstName), { parse_mode: 'HTML', ...keyboards.ageGate() });
 };
+
+/**
+ * Comandos colados com formatação (ex.: monoespaçado/código) chegam sem a
+ * entidade bot_command e o Telegraf não os reconhece. Em chat privado,
+ * se a mensagem começa com "/comando", recria a entidade no início.
+ */
+export const normalizePastedCommand: MiddlewareFn<BotContext> = (ctx, next) => {
+  const msg = ctx.message;
+  if (ctx.chat?.type !== 'private' || !msg || !('text' in msg)) return next();
+
+  const match = /^\/[A-Za-z0-9_]{1,32}(@[A-Za-z0-9_]{5,32})?/.exec(msg.text);
+  const first = msg.entities?.[0];
+  if (!match || (first?.type === 'bot_command' && first.offset === 0)) return next();
+
+  const commandEntity = { type: 'bot_command' as const, offset: 0, length: match[0].length };
+  // Remove formatações que se sobrepõem ao comando e mantém o resto
+  const others = (msg.entities ?? []).filter((e) => e.offset >= match[0].length);
+  (msg as { entities?: unknown[] }).entities = [commandEntity, ...others];
+  return next();
+};
