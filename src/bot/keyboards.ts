@@ -9,6 +9,7 @@ export const CB = {
   plans: 'menu:plans',
   status: 'menu:status',
   previews: 'menu:previews',
+  optOut: 'mkt:optout',
   buyPrefix: 'buy:',
 } as const;
 
@@ -35,6 +36,12 @@ export const keyboards = {
         ),
       ]),
     ),
+
+  remarketing: () =>
+    Markup.inlineKeyboard([
+      [Markup.button.callback('🔥 QUERO SER VIP', CB.plans)],
+      [Markup.button.callback('🔕 Não quero receber mensagens', CB.optOut)],
+    ]),
 
   cta: () => Markup.inlineKeyboard([[Markup.button.callback('🔥 QUERO ACESSO COMPLETO', CB.plans)]]),
 

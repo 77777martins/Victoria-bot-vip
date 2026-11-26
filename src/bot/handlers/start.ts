@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { userService } from '../../services/userService';
 import { env } from '../../config/env';
 import { sendPreviews, sendWelcome } from '../presenters';
+import { remarketingService } from '../../services/remarketingService';
 
 export const registerStartHandlers = (bot: Telegraf<BotContext>): void => {
   bot.start(async (ctx) => {
@@ -34,6 +35,12 @@ export const registerStartHandlers = (bot: Telegraf<BotContext>): void => {
   bot.action(CB.previews, async (ctx) => {
     await ctx.answerCbQuery();
     await sendPreviews(ctx);
+  });
+
+  bot.action(CB.optOut, async (ctx) => {
+    await ctx.answerCbQuery('Pronto, você não vai mais receber mensagens.');
+    if (ctx.appUser) await remarketingService.optOut(ctx.appUser.id);
+    await ctx.editMessageReplyMarkup(undefined).catch(() => undefined);
   });
 
   bot.command('termos', (ctx) => ctx.reply(messages.terms, { parse_mode: 'HTML' }));

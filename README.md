@@ -65,6 +65,16 @@ Visual de vendas (editável pelo próprio Telegram, sem deploy):
 - Responder a uma foto/vídeo com `/addprevia` → prévia (máx. 10, enviadas com `protect_content`)
 - `/textoboasvindas <texto>`, `/textopadrao`, `/removermidia`, `/limparprevias`, `/vercomocliente`
 
+Remarketing (quem passou pelo 18+ e nunca comprou; máx. 5 mensagens, com botão de descadastro):
+- Responder a uma foto/vídeo com `/remarketing <horas>` ou `/remarketing <horas> <texto>`
+- `/verremarketing`, `/testarremarketing <n>`, `/removerremarketing <n>`
+- Quem está atrasado recebe só a mensagem mais recente devida (sem rajadas). Remover/reordenar passos desloca a contagem.
+
+Posts automáticos no grupo VIP (horário de Brasília):
+- `/agendar 25/12 20:00 [texto]` (respondendo a mídia ou só texto) — máx. 60 dias à frente
+- `/fila [texto]` + `/horarios 12:00,20:00` → posta 1 item da fila por horário; `/horarios off` pausa
+- `/agendados`, `/cancelarpost <código>`
+
 ## Segurança
 
 - Segredos só em variáveis de ambiente (validadas na inicialização, nunca logadas).

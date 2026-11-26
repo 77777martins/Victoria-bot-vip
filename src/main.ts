@@ -3,6 +3,8 @@ import { logger } from './lib/logger';
 import { prisma } from './lib/prisma';
 import { ALLOWED_UPDATES, createBot } from './bot';
 import { startExpirationJob } from './jobs/expirationJob';
+import { startRemarketingJob } from './jobs/remarketingJob';
+import { startPostingJob } from './jobs/postingJob';
 
 async function main(): Promise<void> {
   await prisma.$connect();
@@ -16,7 +18,11 @@ async function main(): Promise<void> {
     { command: 'paysupport', description: 'Suporte de pagamento' },
   ]);
 
-  const stopJob = startExpirationJob(bot.telegram, access);
+  const stopJobs = [
+    startExpirationJob(bot.telegram, access),
+    startRemarketingJob(bot.telegram),
+    startPostingJob(bot.telegram),
+  ];
 
   const launchOptions = env.WEBHOOK_DOMAIN
     ? {
@@ -34,7 +40,7 @@ async function main(): Promise<void> {
 
   const shutdown = async (signal: string) => {
     logger.info({ signal }, 'encerrando');
-    stopJob();
+    stopJobs.forEach((stop) => stop());
     bot.stop(signal);
     await prisma.$disconnect();
     process.exit(0);

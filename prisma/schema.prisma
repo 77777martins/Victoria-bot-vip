@@ -33,11 +33,16 @@ model User {
   ageConfirmedAt   DateTime?
   termsAcceptedAt  DateTime?
   isBanned         Boolean   @default(false)
+  /// Índice do próximo passo de remarketing a enviar
+  remarketingStep  Int       @default(0)
+  marketingOptOut  Boolean   @default(false)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   payments      Payment[]
   subscriptions Subscription[]
+
+  @@index([remarketingStep, ageConfirmedAt])
 }
 
 model Plan {
@@ -126,4 +131,40 @@ model PreviewMedia {
   createdAt DateTime  @default(now())
 
   @@index([sortOrder])
+}
+
+enum PostStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELED
+}
+
+/// Sequência de mensagens para quem entrou e não comprou
+model RemarketingStep {
+  id         String     @id @default(uuid())
+  /// Horas após a confirmação de 18+
+  delayHours Int
+  mediaType  MediaType?
+  fileId     String?
+  text       String
+  createdAt  DateTime   @default(now())
+
+  @@index([delayHours])
+}
+
+/// Posts para o grupo VIP: com data (scheduledAt) ou na fila diária (scheduledAt null)
+model ScheduledPost {
+  id          String     @id @default(uuid())
+  mediaType   MediaType?
+  fileId      String?
+  caption     String?
+  scheduledAt DateTime?
+  status      PostStatus @default(PENDING)
+  sentAt      DateTime?
+  error       String?
+  createdAt   DateTime   @default(now())
+
+  @@index([status, scheduledAt])
+  @@index([status, createdAt])
 }
