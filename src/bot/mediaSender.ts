@@ -30,6 +30,8 @@ export const sendMediaMessage = async (
     await telegram.sendPhoto(chatId, msg.fileId, { ...common, caption });
   } else if (msg.fileId && msg.mediaType === 'VIDEO') {
     await telegram.sendVideo(chatId, msg.fileId, { ...common, caption });
+  } else if (msg.fileId && msg.mediaType === 'ANIMATION') {
+    await telegram.sendAnimation(chatId, msg.fileId, { ...common, caption });
   } else if (caption) {
     await telegram.sendMessage(chatId, caption, common);
   }

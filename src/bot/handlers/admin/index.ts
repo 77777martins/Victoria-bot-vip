@@ -15,8 +15,10 @@ const HELP =
   '🎨 <b>Visual de vendas</b> <i>(responda a uma foto/vídeo)</i>\n' +
   '/boasvindas — capa da tela inicial\n' +
   '/addprevia — prévia (máx. 10)\n' +
+  '/midiaplanos — vídeo junto com os planos\n' +
   '/textoboasvindas &lt;texto&gt; | /textopadrao\n' +
-  '/removermidia | /limparprevias | /vercomocliente\n\n' +
+  '/removermidia | /removermidiaplanos | /limparprevias\n' +
+  '/vercomocliente\n\n' +
   '📣 <b>Remarketing</b> <i>(quem não comprou)</i>\n' +
   '/remarketing &lt;horas&gt; [texto]\n' +
   '/verremarketing | /testarremarketing &lt;n&gt; | /removerremarketing &lt;n&gt;\n\n' +
