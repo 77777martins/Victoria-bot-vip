@@ -14,6 +14,9 @@ export const repliedMedia = (ctx: BotContext): { type: MediaType; fileId: string
     return { type: 'PHOTO', fileId: largest.file_id, caption };
   }
   if ('video' in reply) return { type: 'VIDEO', fileId: reply.video.file_id, caption };
+  // Vídeos curtos/sem som viram "GIF" (animation) no Telegram
+  const animation = (reply as { animation?: { file_id: string } }).animation;
+  if (animation) return { type: 'ANIMATION', fileId: animation.file_id, caption };
   return null;
 };
 

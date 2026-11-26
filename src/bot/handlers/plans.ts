@@ -6,14 +6,12 @@ import { planService } from '../../services/planService';
 import { paymentService, STARS_CURRENCY } from '../../services/paymentService';
 import { subscriptionService } from '../../services/subscriptionService';
 import { DomainError } from '../../domain/types';
+import { sendPlans } from '../presenters';
 
 const SLUG_RE = /^buy:([a-z0-9-]{1,32})$/;
 
 export const registerPlanHandlers = (bot: Telegraf<BotContext>): void => {
-  const showPlans = async (ctx: BotContext) => {
-    const plans = await planService.listActive();
-    await ctx.reply(messages.plansList(plans), { parse_mode: 'HTML', ...keyboards.plans(plans) });
-  };
+  const showPlans = (ctx: BotContext) => sendPlans(ctx);
 
   bot.command('planos', showPlans);
   bot.action(CB.plans, async (ctx) => {

@@ -63,7 +63,9 @@ Admin (IDs em `ADMIN_IDS`, só no privado): `/admin`, `/stats`,
 Visual de vendas (editável pelo próprio Telegram, sem deploy):
 - Responder a uma foto/vídeo com `/boasvindas` → mídia da tela inicial (a legenda vira o texto)
 - Responder a uma foto/vídeo com `/addprevia` → prévia (máx. 10, enviadas com `protect_content`)
+- Responder a um vídeo/foto/GIF com `/midiaplanos` → mídia enviada junto com a lista de planos (`/removermidiaplanos` desfaz)
 - `/textoboasvindas <texto>`, `/textopadrao`, `/removermidia`, `/limparprevias`, `/vercomocliente`
+- Vídeos curtos/sem som viram GIF (animation) no Telegram: aceitos na capa, nos planos, no remarketing e nos posts (não nas prévias)
 
 Remarketing (quem passou pelo 18+ e nunca comprou; máx. 5 mensagens, com botão de descadastro):
 - Responder a uma foto/vídeo com `/remarketing <horas>` ou `/remarketing <horas> <texto>`

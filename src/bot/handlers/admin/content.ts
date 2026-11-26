@@ -41,6 +41,7 @@ contentAdmin.command('removermidia', async (ctx) => {
 contentAdmin.command('addprevia', async (ctx) => {
   const media = repliedMedia(ctx);
   if (!media) return ctx.reply('Envie uma foto ou vídeo e RESPONDA a ela com /addprevia.');
+  if (media.type === 'ANIMATION') return ctx.reply('GIFs não podem ir no álbum de prévias. Envie como vídeo com som ou foto.');
   const total = await contentService.addPreview(media.type, media.fileId);
   if (total === -1) return ctx.reply('Limite de 10 prévias. Use /limparprevias para recomeçar.');
   audit(ctx, 'addprevia', { type: media.type });
@@ -54,3 +55,16 @@ contentAdmin.command('limparprevias', async (ctx) => {
 });
 
 contentAdmin.command('vercomocliente', (ctx) => sendWelcome(ctx));
+
+contentAdmin.command('midiaplanos', async (ctx) => {
+  const media = repliedMedia(ctx);
+  if (!media) return ctx.reply('Envie um vídeo, foto ou GIF e RESPONDA a ele com /midiaplanos.');
+  await contentService.updateScreen('plans', { mediaType: media.type, fileId: media.fileId });
+  audit(ctx, 'midiaplanos', { type: media.type });
+  return ctx.reply('✅ Mídia dos planos atualizada. Veja com /planos');
+});
+
+contentAdmin.command('removermidiaplanos', async (ctx) => {
+  await contentService.updateScreen('plans', { mediaType: null, fileId: null });
+  return ctx.reply('✅ Planos voltam a aparecer só com texto.');
+});

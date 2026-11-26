@@ -113,6 +113,7 @@ model Subscription {
 enum MediaType {
   PHOTO
   VIDEO
+  ANIMATION
 }
 
 /// Configurações editáveis pelo admin via bot (chave/valor JSON validado no código)
