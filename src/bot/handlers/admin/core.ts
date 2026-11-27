@@ -14,7 +14,7 @@ export const coreAdmin = new Composer<BotContext>();
 
 coreAdmin.command('stats', async (ctx) => {
   const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const [users, active, paid, paid24h] = await Promise.all([
+  const [users, active, paid, paid24h, pix] = await Promise.all([
     prisma.user.count(),
     prisma.subscription.count({
       where: { status: 'ACTIVE', OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] },
@@ -25,12 +25,18 @@ coreAdmin.command('stats', async (ctx) => {
       _sum: { amount: true },
     }),
     prisma.payment.count({ where: { status: 'PAID', provider: 'TELEGRAM_STARS', paidAt: { gte: since24h } } }),
+    prisma.payment.aggregate({
+      where: { status: 'PAID', provider: 'PIX_MANUAL' },
+      _count: true,
+      _sum: { amount: true },
+    }),
   ]);
   await ctx.reply(
     `📊 <b>Estatísticas</b>\n\n` +
       `Usuários: ${users}\nAssinaturas ativas: ${active}\n` +
-      `Vendas (total): ${paid._count} — ⭐ ${paid._sum.amount ?? 0}\n` +
-      `Vendas (24h): ${paid24h}`,
+      `Vendas Stars (total): ${paid._count} — ⭐ ${paid._sum.amount ?? 0}\n` +
+      `Vendas Stars (24h): ${paid24h}\n` +
+      `Vendas PIX (total): ${pix._count} — ${formatBRL(pix._sum.amount ?? 0)}`,
     { parse_mode: 'HTML' },
   );
 });
@@ -86,6 +92,9 @@ coreAdmin.command('reembolsar', async (ctx) => {
 
   const payment = await paymentService.findPaidByChargeId(chargeId);
   if (!payment || payment.status !== 'PAID') return ctx.reply('Pagamento pago não encontrado.');
+  if (payment.provider !== 'TELEGRAM_STARS') {
+    return ctx.reply('Esse comando é só para Stars. PIX se devolve pelo app do banco; use /banir para revogar o acesso.');
+  }
 
   const telegramId = Number(payment.user.telegramId);
   await ctx.access.refundStars(telegramId, chargeId);

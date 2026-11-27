@@ -23,11 +23,36 @@ const envSchema = z
       .optional()
       .or(z.literal('').transform(() => undefined)),
     PORT: z.coerce.number().int().positive().default(3000),
+    /** PIX manual (opcional). Chave no nome da cliente: CPF, CNPJ, e-mail, +55 telefone ou aleatória. */
+    PIX_KEY: z
+      .string()
+      .trim()
+      .min(5)
+      .max(77)
+      .regex(/^\S+$/, 'PIX_KEY sem espaços')
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    PIX_MERCHANT_NAME: z
+      .string()
+      .trim()
+      .min(1)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    PIX_MERCHANT_CITY: z
+      .string()
+      .trim()
+      .min(1)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
     SUPPORT_USERNAME: z
       .string()
       .regex(/^[A-Za-z0-9_]{5,32}$/)
       .optional()
       .or(z.literal('').transform(() => undefined)),
+  })
+  .refine((e) => !e.PIX_KEY || (e.PIX_MERCHANT_NAME && e.PIX_MERCHANT_CITY), {
+    message: 'PIX_MERCHANT_NAME e PIX_MERCHANT_CITY são obrigatórios quando PIX_KEY está definido',
+    path: ['PIX_MERCHANT_NAME'],
   })
   .refine((e) => !e.WEBHOOK_DOMAIN || e.WEBHOOK_SECRET, {
     message: 'WEBHOOK_SECRET é obrigatório quando WEBHOOK_DOMAIN está definido',

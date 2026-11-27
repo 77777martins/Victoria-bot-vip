@@ -10,6 +10,7 @@ datasource db {
 enum PaymentProvider {
   TELEGRAM_STARS
   MANUAL
+  PIX_MANUAL
 }
 
 enum PaymentStatus {
@@ -17,6 +18,7 @@ enum PaymentStatus {
   PAID
   REFUNDED
   FAILED
+  REJECTED
 }
 
 enum SubscriptionStatus {
@@ -78,6 +80,11 @@ model Payment {
   providerChargeId  String?         @unique
   paidAt            DateTime?
   refundedAt        DateTime?
+  /// PIX manual: identificador no BR Code e comprovante enviado pelo cliente
+  pixTxid           String?         @unique
+  proofFileId       String?
+  proofSubmittedAt  DateTime?
+  reviewedBy        BigInt?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 

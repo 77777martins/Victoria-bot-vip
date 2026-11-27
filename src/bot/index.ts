@@ -10,6 +10,7 @@ import { registerPlanHandlers } from './handlers/plans';
 import { registerPaymentHandlers } from './handlers/payments';
 import { registerJoinRequestHandler } from './handlers/joinRequests';
 import { registerAdminHandlers } from './handlers/admin';
+import { registerPixProofHandler } from './handlers/pixProof';
 
 export const ALLOWED_UPDATES = ['message', 'callback_query', 'pre_checkout_query', 'chat_join_request'] as const;
 
@@ -33,6 +34,7 @@ export const createBot = () => {
   bot.use(requireAge);
   registerStartHandlers(bot);
   registerPlanHandlers(bot);
+  registerPixProofHandler(bot);
 
   bot.catch(async (err, ctx) => {
     logger.error({ err, updateType: ctx.updateType, userId: ctx.from?.id }, 'erro não tratado');

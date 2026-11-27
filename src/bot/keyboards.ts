@@ -11,6 +11,10 @@ export const CB = {
   previews: 'menu:previews',
   optOut: 'mkt:optout',
   buyPrefix: 'buy:',
+  payStarsPrefix: 'pay:stars:',
+  payPixPrefix: 'pay:pix:',
+  pixApprovePrefix: 'pix:ok:',
+  pixRejectPrefix: 'pix:no:',
 } as const;
 
 export const keyboards = {
@@ -41,6 +45,20 @@ export const keyboards = {
     Markup.inlineKeyboard([
       [Markup.button.callback('🔥 QUERO SER VIP', CB.plans)],
       [Markup.button.callback('🔕 Não quero receber mensagens', CB.optOut)],
+    ]),
+
+  paymentMethod: (slug: string) =>
+    Markup.inlineKeyboard([
+      [Markup.button.callback('💠 Pagar com PIX', `${CB.payPixPrefix}${slug}`)],
+      [Markup.button.callback('⭐ Pagar com Stars (liberação automática)', `${CB.payStarsPrefix}${slug}`)],
+    ]),
+
+  pixReview: (paymentId: string) =>
+    Markup.inlineKeyboard([
+      [
+        Markup.button.callback('✅ Aprovar', `${CB.pixApprovePrefix}${paymentId}`),
+        Markup.button.callback('❌ Recusar', `${CB.pixRejectPrefix}${paymentId}`),
+      ],
     ]),
 
   cta: () => Markup.inlineKeyboard([[Markup.button.callback('🔥 QUERO ACESSO COMPLETO', CB.plans)]]),
