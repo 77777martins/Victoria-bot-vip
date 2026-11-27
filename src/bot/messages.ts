@@ -87,6 +87,34 @@ export const messages = {
     `Valor: ⭐ ${s.stars}\n\n` +
     `Reembolso: <code>/reembolsar ${escapeHtml(s.chargeId)}</code>`,
 
+  paymentMethod: (p: PlanDTO) =>
+    `💎 <b>${escapeHtml(p.name)}</b> — ${formatBRL(p.priceCents)}\n\nComo você prefere pagar?`,
+
+  pixCharge: (p: PlanDTO) =>
+    `💠 <b>PIX — ${escapeHtml(p.name)}</b>\n` +
+    `Valor: <b>${formatBRL(p.priceCents)}</b>\n\n` +
+    '1️⃣ Escaneie o QR Code ou use o <b>copia e cola</b> abaixo\n' +
+    '2️⃣ Pague o valor exato\n' +
+    '3️⃣ <b>Envie aqui a foto/print do comprovante</b>\n\n' +
+    'Assim que confirmarmos, você recebe o link do grupo 💋',
+
+  pixCopyPaste: (code: string) => `<b>PIX copia e cola</b> (toque para copiar):\n\n<code>${escapeHtml(code)}</code>`,
+
+  pixProofReceived:
+    '✅ <b>Comprovante recebido!</b>\n\nEstamos conferindo o pagamento. Você recebe o link do grupo aqui assim que for aprovado. 💋',
+
+  pixRejected:
+    '❌ Não conseguimos identificar seu pagamento PIX.\n\nSe você pagou, fale com o suporte: /paysupport\nOu gere uma nova cobrança em /planos.',
+
+  pixReviewAdmin: (r: { buyer: string; telegramId: number; planName: string; amountCents: number; txid: string | null; createdAt: Date }) =>
+    '💠 <b>PIX para conferir</b>\n\n' +
+    `Cliente: ${escapeHtml(r.buyer)} (<code>${r.telegramId}</code>)\n` +
+    `Plano: ${escapeHtml(r.planName)}\n` +
+    `Valor: <b>${formatBRL(r.amountCents)}</b>\n` +
+    `ID PIX: <code>${escapeHtml(r.txid ?? '-')}</code>\n` +
+    `Gerado em: ${formatDate(r.createdAt)}\n\n` +
+    '⚠️ <b>Confira no app do banco</b> se o valor caiu antes de aprovar. Comprovante pode ser falso.',
+
   banned: 'Sua conta não tem permissão para usar este bot.',
   rateLimited: 'Calma 🙂 Aguarde alguns segundos e tente de novo.',
   genericError: 'Ops, algo deu errado. Tente novamente em instantes.',

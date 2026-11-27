@@ -5,6 +5,7 @@ import { coreAdmin } from './core';
 import { contentAdmin } from './content';
 import { marketingAdmin } from './marketing';
 import { postsAdmin } from './posts';
+import { pixAdmin } from './pix';
 
 const HELP =
   '🛠 <b>Admin</b>\n\n' +
@@ -12,7 +13,8 @@ const HELP =
   '/liberar &lt;telegramId&gt; &lt;semanal|mensal|vitalicio&gt;\n' +
   '/banir &lt;telegramId&gt; | /desbanir &lt;telegramId&gt;\n' +
   '/reembolsar &lt;chargeId&gt;\n' +
-  '/precostars [plano] [stars] — ver/alterar preço em ⭐\n\n' +
+  '/precostars [plano] [stars] — ver/alterar preço em ⭐\n' +
+  '/pixpendentes — comprovantes PIX aguardando análise\n\n' +
   '🎨 <b>Visual de vendas</b> <i>(responda a uma foto/vídeo)</i>\n' +
   '/boasvindas — capa da tela inicial\n' +
   '/addprevia — prévia (máx. 10)\n' +
@@ -35,7 +37,7 @@ const HELP =
 export const registerAdminHandlers = (bot: Telegraf<BotContext>): void => {
   const admin = new Composer<BotContext>();
   admin.command('admin', (ctx) => ctx.reply(HELP, { parse_mode: 'HTML' }));
-  admin.use(coreAdmin, contentAdmin, marketingAdmin, postsAdmin);
+  admin.use(coreAdmin, contentAdmin, marketingAdmin, postsAdmin, pixAdmin);
 
   // Só executa para IDs de admin em chat privado; para os demais, é ignorado.
   bot.use(

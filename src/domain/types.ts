@@ -2,8 +2,8 @@
  * Tipos de domínio espelhando os enums/modelos do Prisma.
  * Mantidos aqui para que a camada de bot não dependa diretamente do client gerado.
  */
-export type PaymentProvider = 'TELEGRAM_STARS' | 'MANUAL';
-export type PaymentStatus = 'PENDING' | 'PAID' | 'REFUNDED' | 'FAILED';
+export type PaymentProvider = 'TELEGRAM_STARS' | 'MANUAL' | 'PIX_MANUAL';
+export type PaymentStatus = 'PENDING' | 'PAID' | 'REFUNDED' | 'FAILED' | 'REJECTED';
 export type SubscriptionStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
 
 export interface PlanDTO {

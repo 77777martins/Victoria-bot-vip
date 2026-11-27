@@ -22,9 +22,21 @@ direto no banco (`priceStars`) sem precisar de deploy. O seed não sobrescreve `
 5. Bot envia link pessoal com **pedido de entrada** (24h). O bot só aprova quem tem assinatura ativa — link vazado não funciona.
 6. Job a cada 5 min: avisa 24h antes do vencimento e remove do grupo quem expirou.
 
+## PIX com aprovação manual (opcional)
+
+Ative definindo `PIX_KEY`, `PIX_MERCHANT_NAME` e `PIX_MERCHANT_CITY` (chave no nome da cliente).
+
+1. Cliente escolhe o plano → **PIX** ou **Stars**.
+2. Bot gera QR Code + copia e cola (BR Code estático com valor e ID único `VIP...`).
+3. Cliente envia foto/PDF do comprovante (até 48h).
+4. Admins recebem o comprovante com **✅ Aprovar / ❌ Recusar**. **Sempre conferir no app do banco** — comprovante pode ser falso.
+5. Aprovado → assinatura criada e link enviado (aprovação idempotente: dois admins não duplicam).
+
+O banco não avisa o bot: sem um gateway com API/webhook, a confirmação automática de PIX não é possível.
+
 ## Stack
 
-Node 20+, TypeScript, Telegraf 4, Prisma 6, PostgreSQL, Zod, Pino.
+Node 20+, TypeScript, Telegraf 4, Prisma 6, PostgreSQL, Zod, Pino, qrcode. Testes: `npm test` (node:test via tsx).
 
 ## Estrutura
 
