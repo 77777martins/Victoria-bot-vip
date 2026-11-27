@@ -4,6 +4,7 @@ import { messages } from './messages';
 import { sendMediaMessage } from './mediaSender';
 import { contentService } from '../services/contentService';
 import { planService } from '../services/planService';
+import { isPixEnabled } from '../services/pixService';
 import { escapeHtml } from '../lib/format';
 
 /** Tela de boas-vindas: foto/vídeo/GIF + texto de venda + botões. */
@@ -28,7 +29,7 @@ export const sendPlans = async (ctx: BotContext): Promise<void> => {
   await sendMediaMessage(
     ctx.telegram,
     ctx.chat.id,
-    { mediaType: media.mediaType, fileId: media.fileId, text: messages.plansList(plans) },
+    { mediaType: media.mediaType, fileId: media.fileId, text: messages.plansList(plans, isPixEnabled()) },
     { parseMode: 'HTML', replyMarkup: keyboards.plans(plans).reply_markup },
   );
 };

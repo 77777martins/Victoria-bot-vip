@@ -26,10 +26,12 @@ export const messages = {
     return `${icon} <b>${escapeHtml(p.name)}</b> — ${formatBRL(p.priceCents)}${tag ? `\n     <i>${tag}</i>` : ''}`;
   },
 
-  plansList: (plans: PlanDTO[]) =>
+  plansList: (plans: PlanDTO[], pixEnabled = false) =>
     plans.length
       ? `💎 <b>Escolha seu acesso VIP</b>\n\n${plans.map(messages.planLine).join('\n\n')}\n\n` +
-        '✅ Liberação automática na hora\n🔒 Pagamento seguro pelo Telegram (⭐ Stars)'
+        (pixEnabled
+          ? '💠 Pague com <b>PIX</b> ou ⭐ Telegram Stars\n🔒 Pagamento seguro e discreto'
+          : '✅ Liberação automática na hora\n🔒 Pagamento seguro pelo Telegram (⭐ Stars)')
       : 'Nenhum plano disponível no momento.',
 
   /** Enviada no privado quando o assinante entra no grupo (editável com /textoentrada) */
